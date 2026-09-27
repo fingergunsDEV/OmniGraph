@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Overview · OmniGraph",
+      "hasCanvas": false,
+      "bodyTextLen": 2578,
+      "bodyTextHash": "c39c05131200758093cc892a6b204c23142bb758c51178ebcff0437db4acfe8f",
+      "bodyTextPrefix": "OmniGraphTM Performance, credit, and the work that ships it. Ove",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Overview · OmniGraph",
+      "hasCanvas": false,
+      "bodyTextLen": 2319,
+      "bodyTextHash": "5e64e442bb8edb067173a215fe8a8c58c9e5f5826f352184b0557cafc0844523",
+      "bodyTextPrefix": "OmniGraphTM Workspace Lumen & Co Harbor Goods Vela Athletics 7d ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}
