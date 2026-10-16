@@ -1,7 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ChannelsPage } from "@/components/omnigraph/pages/channels";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_app/channels")({
-  component: ChannelsPage,
-  head: () => ({ meta: [{ title: "Channels · OmniGraph" }] }),
+  component: ChannelsLayout,
 });
+
+function ChannelsLayout() {
+  return <Outlet />;
+}

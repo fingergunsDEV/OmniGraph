@@ -3,7 +3,6 @@ import { useState } from "react";
 import { CHANNELS, RANGES, type ChannelId } from "@/lib/omnigraph/content";
 import { buildInsights, channelMeta, modelMeta } from "@/lib/omnigraph/engine";
 import { money, num, pct, roas } from "@/lib/omnigraph/format";
-import { useUi } from "@/lib/omnigraph/store";
 import { cn } from "@/lib/utils";
 import { RevenueChart } from "../charts";
 import { useSnapshot, useWork } from "../use-snapshot";
@@ -12,7 +11,6 @@ import { ChannelGlyph, Kpi, Meter, PageIntro, SectionTitle, StatusPill, Surface 
 export function OverviewPage() {
   const snapshot = useSnapshot();
   const { items, score } = useWork();
-  const setFocus = useUi((state) => state.setFocusChannel);
   const [hidden, setHidden] = useState<Partial<Record<ChannelId, boolean>>>({});
   const { kpis, workspace, channels } = snapshot;
   const model = modelMeta(snapshot.model);
@@ -35,8 +33,8 @@ export function OverviewPage() {
         {CHANNELS.map((channel) => (
           <Link
             key={channel.id}
-            to="/channels"
-            onClick={() => setFocus(channel.id)}
+            to="/channels/$channelId"
+            params={{ channelId: channel.id }}
             className="inline-flex h-11 items-center gap-2 rounded-full bg-surface pr-3 pl-1.5 text-sm font-medium text-ink shadow-card"
           >
             <ChannelGlyph id={channel.id} />
@@ -178,8 +176,8 @@ export function OverviewPage() {
                 <tr key={channel.id}>
                   <td className="py-3">
                     <Link
-                      to="/channels"
-                      onClick={() => setFocus(channel.id)}
+                      to="/channels/$channelId"
+                      params={{ channelId: channel.id }}
                       className="inline-flex items-center gap-2 font-medium"
                     >
                       <ChannelGlyph id={channel.id} className="size-7" />

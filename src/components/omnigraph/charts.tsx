@@ -1,7 +1,19 @@
-import { Area, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ComposedChart,
+  Line,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { CHANNELS, type ChannelId } from "@/lib/omnigraph/content";
+import type { DrillPoint, RoleRow } from "@/lib/omnigraph/drill";
 import type { SeriesPoint } from "@/lib/omnigraph/engine";
-import { money } from "@/lib/omnigraph/format";
+import { money, num } from "@/lib/omnigraph/format";
 import { channelMeta } from "@/lib/omnigraph/engine";
 import { CHANNEL_COLOR } from "./ui";
 import { useMounted, useReducedMotion } from "./use-snapshot";
@@ -92,6 +104,116 @@ function ChartTip({
           );
         })}
       </ul>
+    </div>
+  );
+}
+
+export function ChannelTrend({ series, color }: { series: DrillPoint[]; color: string }) {
+  const mounted = useMounted();
+  const reduced = useReducedMotion();
+  if (!mounted) return <div className="h-72 rounded-xl bg-canvas" />;
+  return (
+    <div className="h-72 w-full min-w-0">
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart data={series} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+          <CartesianGrid stroke="var(--color-line)" vertical={false} />
+          <XAxis
+            dataKey="label"
+            tick={{ fill: "var(--color-faint)", fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+            interval={series.length > 12 ? Math.ceil(series.length / 6) : 0}
+          />
+          <YAxis
+            tick={{ fill: "var(--color-faint)", fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+            width={48}
+            tickFormatter={(value: number) => (value >= 1000 ? `$${Math.round(value / 1000)}k` : `$${Math.round(value)}`)}
+          />
+          <Tooltip
+            content={({ active, payload, label }) => {
+              if (!active || !payload?.length) return null;
+              const names: Record<string, string> = { credit: "Model credit", spend: "Spend", platform: "Platform claim" };
+              return (
+                <div className="rounded-xl bg-surface px-3 py-2 shadow-card">
+                  <p className="text-xs font-medium text-muted">{label}</p>
+                  <ul className="mt-1 space-y-0.5">
+                    {payload.map((entry) => (
+                      <li key={String(entry.dataKey)} className="flex justify-between gap-4 text-sm tabular-nums text-ink">
+                        <span>{names[String(entry.dataKey)] ?? String(entry.name)}</span>
+                        <span>{money(Number(entry.value ?? 0))}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            }}
+          />
+          <Area
+            type="monotone"
+            dataKey="platform"
+            name="Platform claim"
+            stroke="var(--color-faint)"
+            fill="var(--color-line)"
+            fillOpacity={1}
+            isAnimationActive={!reduced}
+          />
+          <Area
+            type="monotone"
+            dataKey="credit"
+            name="Model credit"
+            stroke={color}
+            fill={color}
+            fillOpacity={0.85}
+            isAnimationActive={!reduced}
+          />
+          <Line
+            type="monotone"
+            dataKey="spend"
+            name="Spend"
+            stroke="var(--color-navy)"
+            strokeWidth={2}
+            dot={false}
+            isAnimationActive={!reduced}
+          />
+        </ComposedChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+export function RoleChart({ rows, color }: { rows: RoleRow[]; color: string }) {
+  const mounted = useMounted();
+  const reduced = useReducedMotion();
+  if (!mounted) return <div className="h-56 rounded-xl bg-canvas" />;
+  return (
+    <div className="h-56 w-full min-w-0">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={rows} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+          <CartesianGrid stroke="var(--color-line)" vertical={false} />
+          <XAxis dataKey="label" tick={{ fill: "var(--color-faint)", fontSize: 12 }} tickLine={false} axisLine={false} />
+          <YAxis
+            tick={{ fill: "var(--color-faint)", fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+            width={36}
+            allowDecimals={false}
+          />
+          <Tooltip
+            content={({ active, payload, label }) => {
+              if (!active || !payload?.length) return null;
+              return (
+                <div className="rounded-xl bg-surface px-3 py-2 shadow-card">
+                  <p className="text-xs font-medium text-muted">{label}</p>
+                  <p className="text-sm font-medium tabular-nums text-ink">{num(Number(payload[0]?.value ?? 0))} orders</p>
+                </div>
+              );
+            }}
+          />
+          <Bar dataKey="orders" fill={color} radius={[8, 8, 0, 0]} isAnimationActive={!reduced} />
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 }

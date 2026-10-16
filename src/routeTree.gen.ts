@@ -17,6 +17,9 @@ import { Route as AppCampaignsRouteImport } from './routes/_app/campaigns'
 import { Route as AppChannelsRouteImport } from './routes/_app/channels'
 import { Route as AppInsightsRouteImport } from './routes/_app/insights'
 import { Route as AppJourneysRouteImport } from './routes/_app/journeys'
+import { Route as AppSettingsRouteImport } from './routes/_app/settings'
+import { Route as AppChannelsIndexRouteImport } from './routes/_app/channels/index'
+import { Route as AppChannelsChannelIdRouteImport } from './routes/_app/channels/$channelId'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
@@ -57,24 +60,44 @@ const AppJourneysRoute = AppJourneysRouteImport.update({
   path: '/journeys',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppChannelsIndexRoute = AppChannelsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppChannelsRoute,
+} as any)
+const AppChannelsChannelIdRoute = AppChannelsChannelIdRouteImport.update({
+  id: '/$channelId',
+  path: '/$channelId',
+  getParentRoute: () => AppChannelsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/alignment': typeof AppAlignmentRoute
   '/attribution': typeof AppAttributionRoute
   '/campaigns': typeof AppCampaignsRoute
-  '/channels': typeof AppChannelsRoute
+  '/channels': typeof AppChannelsRouteWithChildren
   '/insights': typeof AppInsightsRoute
   '/journeys': typeof AppJourneysRoute
+  '/settings': typeof AppSettingsRoute
+  '/channels/$channelId': typeof AppChannelsChannelIdRoute
+  '/channels/': typeof AppChannelsIndexRoute
 }
 export interface FileRoutesByTo {
   '/alignment': typeof AppAlignmentRoute
   '/attribution': typeof AppAttributionRoute
   '/campaigns': typeof AppCampaignsRoute
-  '/channels': typeof AppChannelsRoute
   '/insights': typeof AppInsightsRoute
   '/journeys': typeof AppJourneysRoute
+  '/settings': typeof AppSettingsRoute
   '/': typeof AppIndexRoute
+  '/channels/$channelId': typeof AppChannelsChannelIdRoute
+  '/channels': typeof AppChannelsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -82,10 +105,13 @@ export interface FileRoutesById {
   '/_app/alignment': typeof AppAlignmentRoute
   '/_app/attribution': typeof AppAttributionRoute
   '/_app/campaigns': typeof AppCampaignsRoute
-  '/_app/channels': typeof AppChannelsRoute
+  '/_app/channels': typeof AppChannelsRouteWithChildren
   '/_app/insights': typeof AppInsightsRoute
   '/_app/journeys': typeof AppJourneysRoute
+  '/_app/settings': typeof AppSettingsRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/channels/$channelId': typeof AppChannelsChannelIdRoute
+  '/_app/channels/': typeof AppChannelsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,15 +123,20 @@ export interface FileRouteTypes {
     | '/channels'
     | '/insights'
     | '/journeys'
+    | '/settings'
+    | '/channels/$channelId'
+    | '/channels/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/alignment'
     | '/attribution'
     | '/campaigns'
-    | '/channels'
     | '/insights'
     | '/journeys'
+    | '/settings'
     | '/'
+    | '/channels/$channelId'
+    | '/channels'
   id:
     | '__root__'
     | '/_app'
@@ -115,7 +146,10 @@ export interface FileRouteTypes {
     | '/_app/channels'
     | '/_app/insights'
     | '/_app/journeys'
+    | '/_app/settings'
     | '/_app/'
+    | '/_app/channels/$channelId'
+    | '/_app/channels/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -180,16 +214,52 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppJourneysRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/channels/': {
+      id: '/_app/channels/'
+      path: '/'
+      fullPath: '/channels/'
+      preLoaderRoute: typeof AppChannelsIndexRouteImport
+      parentRoute: typeof AppChannelsRoute
+    }
+    '/_app/channels/$channelId': {
+      id: '/_app/channels/$channelId'
+      path: '/$channelId'
+      fullPath: '/channels/$channelId'
+      preLoaderRoute: typeof AppChannelsChannelIdRouteImport
+      parentRoute: typeof AppChannelsRoute
+    }
   }
 }
+
+interface AppChannelsRouteChildren {
+  AppChannelsChannelIdRoute: typeof AppChannelsChannelIdRoute
+  AppChannelsIndexRoute: typeof AppChannelsIndexRoute
+}
+
+const AppChannelsRouteChildren: AppChannelsRouteChildren = {
+  AppChannelsChannelIdRoute: AppChannelsChannelIdRoute,
+  AppChannelsIndexRoute: AppChannelsIndexRoute,
+}
+
+const AppChannelsRouteWithChildren = AppChannelsRoute._addFileChildren(
+  AppChannelsRouteChildren,
+)
 
 interface AppRouteChildren {
   AppAlignmentRoute: typeof AppAlignmentRoute
   AppAttributionRoute: typeof AppAttributionRoute
   AppCampaignsRoute: typeof AppCampaignsRoute
-  AppChannelsRoute: typeof AppChannelsRoute
+  AppChannelsRoute: typeof AppChannelsRouteWithChildren
   AppInsightsRoute: typeof AppInsightsRoute
   AppJourneysRoute: typeof AppJourneysRoute
+  AppSettingsRoute: typeof AppSettingsRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
@@ -197,9 +267,10 @@ const AppRouteChildren: AppRouteChildren = {
   AppAlignmentRoute: AppAlignmentRoute,
   AppAttributionRoute: AppAttributionRoute,
   AppCampaignsRoute: AppCampaignsRoute,
-  AppChannelsRoute: AppChannelsRoute,
+  AppChannelsRoute: AppChannelsRouteWithChildren,
   AppInsightsRoute: AppInsightsRoute,
   AppJourneysRoute: AppJourneysRoute,
+  AppSettingsRoute: AppSettingsRoute,
   AppIndexRoute: AppIndexRoute,
 }
 

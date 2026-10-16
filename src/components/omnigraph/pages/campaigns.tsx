@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { CHANNELS, type CampaignStatus, type ChannelId } from "@/lib/omnigraph/content";
 import { channelMeta, type CampaignStat } from "@/lib/omnigraph/engine";
@@ -213,6 +214,14 @@ function CampaignDetail({
               ? "Scheduled. Spend share is the plan, not a live auction."
               : "Live. Credit is this line's slice of the channel under the selected model."}
       </p>
+      <Link
+        to="/channels/$channelId"
+        params={{ channelId: campaign.channel }}
+        search={{ campaign: campaign.id }}
+        className="mt-3 inline-flex h-11 items-center text-sm font-semibold text-teal"
+      >
+        Open in {channel.short} drill-down
+      </Link>
       <label htmlFor="campaign-note" className="mt-5 block text-sm font-semibold text-ink">
         Team note
       </label>
